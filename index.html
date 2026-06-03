@@ -476,6 +476,52 @@
       gap: 9px;
     }
 
+    .protein-shortcuts,
+    .body-tabs,
+    .muscle-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .protein-shortcuts,
+    .body-tabs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .muscle-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .choice-btn {
+      min-height: 54px;
+      padding: 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(18, 21, 27, 0.74);
+      color: var(--muted);
+      text-align: center;
+      transition: 160ms ease;
+    }
+
+    .choice-btn.active {
+      border-color: var(--line-strong);
+      color: var(--text);
+      background: rgba(96, 226, 232, 0.13);
+    }
+
+    .choice-btn strong {
+      display: block;
+      color: inherit;
+      font-size: 14px;
+    }
+
+    .choice-btn span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
     .meal-row,
     .workout-row {
       display: grid;
@@ -505,6 +551,30 @@
     .workout-row b {
       color: var(--cyan);
       font-size: 18px;
+    }
+
+    .exercise-panel {
+      display: grid;
+      gap: 10px;
+    }
+
+    .exercise-summary {
+      display: grid;
+      gap: 6px;
+      padding: 12px;
+      border: 1px solid rgba(96, 226, 232, 0.2);
+      border-radius: var(--radius);
+      background: rgba(96, 226, 232, 0.08);
+    }
+
+    .exercise-summary strong {
+      font-size: 16px;
+    }
+
+    .exercise-summary span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .quick-add {
@@ -806,39 +876,73 @@
       <section class="screen" id="train" aria-label="訓練">
         <div class="section">
           <div class="kicker">Training</div>
-          <h1>今天做對一組，也算推進。</h1>
+          <h1>先選身體區域，再把每一組記下來。</h1>
         </div>
 
         <div class="section">
           <div class="section-head">
-            <h2>快速開始</h2>
+            <h2>身體分區</h2>
           </div>
-          <div class="workout-list">
-            <button class="workout-row" data-start-workout="上肢力量" data-minutes="40">
-              <span><strong>上肢力量</strong><span>臥推、划船、肩推</span></span>
-              <b>40m</b>
+          <div class="body-tabs">
+            <button class="choice-btn active" data-body-zone="upper">
+              <strong>上半身</strong>
+              <span>胸、肩、背、腹</span>
             </button>
-            <button class="workout-row" data-start-workout="下肢力量" data-minutes="45">
-              <span><strong>下肢力量</strong><span>深蹲、硬舉、弓箭步</span></span>
-              <b>45m</b>
+            <button class="choice-btn" data-body-zone="lower">
+              <strong>下半身</strong>
+              <span>大腿、小腿</span>
             </button>
-            <button class="workout-row" data-start-workout="恢復伸展" data-minutes="18">
-              <span><strong>恢復伸展</strong><span>髖、胸椎、腿後側</span></span>
-              <b>18m</b>
-            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2>部位</h2>
+          </div>
+          <div class="muscle-grid" id="muscleGrid"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2 id="exerciseHeading">動作</h2>
+          </div>
+          <div class="workout-list" id="exerciseList"></div>
+        </div>
+
+        <div class="section">
+          <div class="panel">
+            <form class="exercise-panel" id="setForm">
+              <div class="exercise-summary">
+                <strong id="selectedExerciseName">請先選一個動作</strong>
+                <span id="selectedExerciseHint">選動作後，可以輸入做幾下、做幾組。</span>
+              </div>
+              <div class="form-grid">
+                <label class="input-box">
+                  <span>每組幾下</span>
+                  <input id="repInput" inputmode="numeric" type="number" min="1" value="10">
+                </label>
+                <label class="input-box">
+                  <span>幾組</span>
+                  <input id="setInput" inputmode="numeric" type="number" min="1" value="3">
+                </label>
+              </div>
+              <button class="primary-btn" type="submit">加入訓練紀錄 →</button>
+            </form>
           </div>
         </div>
 
         <div class="section">
           <div class="section-head">
             <h2>本日紀錄</h2>
+            <button class="ghost-btn" id="clearSets">清空</button>
           </div>
-          <div class="panel">
+          <div class="panel" style="margin-bottom: 10px;">
             <div class="bar-row">
               <div class="bar-top"><span id="workoutName">尚未開始</span><span><span id="trainPanelMin">0</span> 分鐘</span></div>
               <div class="bar"><span id="trainBar" style="--value:0%; --bar-color: var(--amber);"></span></div>
             </div>
           </div>
+          <div class="workout-list" id="setLog"></div>
         </div>
       </section>
 
@@ -851,6 +955,16 @@
         <div class="section">
           <div class="section-head">
             <h2>新增餐點</h2>
+          </div>
+          <div class="protein-shortcuts" style="margin-bottom: 10px;">
+            <button class="choice-btn" data-quick-protein="雞蛋" data-protein="6" data-calories="70">
+              <strong>雞蛋</strong>
+              <span>6g 蛋白質</span>
+            </button>
+            <button class="choice-btn" data-quick-protein="蛋白飲" data-protein="20" data-calories="120">
+              <strong>蛋白飲</strong>
+              <span>20g 蛋白質</span>
+            </button>
           </div>
           <form class="form-grid" id="mealForm">
             <label class="input-box wide">
@@ -942,7 +1056,72 @@
       ],
       training: {
         name: "",
-        minutes: 0
+        minutes: 0,
+        zone: "upper",
+        muscle: "chest",
+        exercise: "",
+        sets: []
+      }
+    };
+
+    const exerciseLibrary = {
+      upper: {
+        label: "上半身",
+        muscles: {
+          chest: {
+            label: "胸",
+            exercises: [
+              { name: "伏地挺身", hint: "核心收緊，胸口接近地面後推起。" },
+              { name: "上斜伏地挺身", hint: "手放高處，適合暖身或新手。" },
+              { name: "鑽石伏地挺身", hint: "手掌靠近，胸與三頭肌一起發力。" }
+            ]
+          },
+          shoulders: {
+            label: "肩",
+            exercises: [
+              { name: "派克伏地挺身", hint: "臀部抬高，讓肩膀承受主要重量。" },
+              { name: "靠牆倒立撐", hint: "靠牆保持穩定，依能力控制深度。" },
+              { name: "肩胛伏地挺身", hint: "手肘打直，只移動肩胛骨。" }
+            ]
+          },
+          back: {
+            label: "背",
+            exercises: [
+              { name: "反向划船", hint: "身體成一直線，把胸口拉向槓或桌緣。" },
+              { name: "引體向上", hint: "下巴過槓，下降時保持控制。" },
+              { name: "超人式", hint: "趴姿抬起手腳，練背伸肌控制。" }
+            ]
+          },
+          core: {
+            label: "腹部",
+            exercises: [
+              { name: "棒式", hint: "肋骨收住，骨盆微後傾。" },
+              { name: "仰臥抬腿", hint: "下背貼地，慢慢放下雙腿。" },
+              { name: "登山者", hint: "肩膀穩住，膝蓋交替往胸口帶。" }
+            ]
+          }
+        }
+      },
+      lower: {
+        label: "下半身",
+        muscles: {
+          thighs: {
+            label: "大腿",
+            exercises: [
+              { name: "深蹲", hint: "膝蓋朝腳尖方向，髖部向後坐。" },
+              { name: "弓箭步", hint: "前腳踩穩，後膝垂直下降。" },
+              { name: "保加利亞分腿蹲", hint: "後腳墊高，前腿主導發力。" }
+            ]
+          },
+          calves: {
+            label: "小腿",
+            exercises: [
+              { name: "站姿提踵", hint: "腳跟抬到最高，頂端停一拍。" },
+              { name: "單腳提踵", hint: "扶牆保持平衡，單側慢速控制。" },
+              { name: "坐姿提踵", hint: "膝蓋彎曲，偏向比目魚肌刺激。" }
+            ]
+          }
+        }
       }
     };
 
@@ -955,10 +1134,20 @@
     function loadState() {
       try {
         const saved = localStorage.getItem(storeKey);
-        return saved ? { ...defaultState, ...JSON.parse(saved) } : structuredClone(defaultState);
+        return saved ? normalizeState(JSON.parse(saved)) : structuredClone(defaultState);
       } catch {
         return structuredClone(defaultState);
       }
+    }
+
+    function normalizeState(saved) {
+      return {
+        ...structuredClone(defaultState),
+        ...saved,
+        profile: { ...defaultState.profile, ...(saved.profile || {}) },
+        meals: Array.isArray(saved.meals) ? saved.meals : structuredClone(defaultState.meals),
+        training: { ...defaultState.training, ...(saved.training || {}), sets: Array.isArray(saved.training?.sets) ? saved.training.sets : [] }
+      };
     }
 
     function saveState() {
@@ -1047,7 +1236,88 @@
         });
       }
 
+      renderTrainingLibrary();
       saveState();
+    }
+
+    function currentMuscle() {
+      const zone = exerciseLibrary[state.training.zone] ? state.training.zone : "upper";
+      const muscles = exerciseLibrary[zone].muscles;
+      const muscle = muscles[state.training.muscle] ? state.training.muscle : Object.keys(muscles)[0];
+      state.training.zone = zone;
+      state.training.muscle = muscle;
+      return muscles[muscle];
+    }
+
+    function renderTrainingLibrary() {
+      const zoneData = exerciseLibrary[state.training.zone] || exerciseLibrary.upper;
+      const muscleData = currentMuscle();
+
+      $$("[data-body-zone]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.bodyZone === state.training.zone);
+      });
+
+      const muscleGrid = $("#muscleGrid");
+      muscleGrid.innerHTML = "";
+      Object.entries(zoneData.muscles).forEach(([key, muscle]) => {
+        const button = document.createElement("button");
+        button.className = `choice-btn${key === state.training.muscle ? " active" : ""}`;
+        button.type = "button";
+        button.dataset.muscle = key;
+        button.innerHTML = `<strong>${escapeHtml(muscle.label)}</strong><span>${muscle.exercises.length} 個動作</span>`;
+        button.addEventListener("click", () => {
+          state.training.muscle = key;
+          state.training.exercise = "";
+          render();
+        });
+        muscleGrid.append(button);
+      });
+
+      $("#exerciseHeading").textContent = `${muscleData.label}動作`;
+      const exerciseList = $("#exerciseList");
+      exerciseList.innerHTML = "";
+      muscleData.exercises.forEach((exercise) => {
+        const button = document.createElement("button");
+        button.className = "workout-row";
+        button.type = "button";
+        button.dataset.exercise = exercise.name;
+        button.innerHTML = `<span><strong>${escapeHtml(exercise.name)}</strong><span>${escapeHtml(exercise.hint)}</span></span><b>選</b>`;
+        button.addEventListener("click", () => {
+          state.training.exercise = exercise.name;
+          $("#selectedExerciseName").textContent = exercise.name;
+          $("#selectedExerciseHint").textContent = exercise.hint;
+          render();
+        });
+        exerciseList.append(button);
+      });
+
+      const selected = muscleData.exercises.find((exercise) => exercise.name === state.training.exercise);
+      $("#selectedExerciseName").textContent = selected ? selected.name : "請先選一個動作";
+      $("#selectedExerciseHint").textContent = selected ? selected.hint : "選動作後，可以輸入做幾下、做幾組。";
+
+      const setLog = $("#setLog");
+      setLog.innerHTML = "";
+      if (!state.training.sets.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "今日還沒有訓練紀錄";
+        setLog.append(empty);
+      } else {
+        state.training.sets.forEach((item, index) => {
+          const row = document.createElement("button");
+          row.className = "workout-row";
+          row.type = "button";
+          row.innerHTML = `<span><strong>${escapeHtml(item.exercise)}</strong><span>${escapeHtml(item.muscle)} · ${item.reps} 下 × ${item.sets} 組</span></span><b>刪</b>`;
+          row.addEventListener("click", () => {
+            state.training.sets.splice(index, 1);
+            state.training.minutes = Math.max(0, state.training.minutes - Math.max(4, Number(item.sets || 1) * 2));
+            state.training.name = state.training.sets[0]?.exercise || "";
+            render();
+            notify("已移除訓練紀錄");
+          });
+          setLog.append(row);
+        });
+      }
     }
 
     function escapeHtml(value) {
@@ -1131,6 +1401,58 @@
       state.meals = [];
       render();
       notify("今日餐點已清空");
+    });
+
+    $$("[data-quick-protein]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        addMeal({
+          name: btn.dataset.quickProtein,
+          calories: btn.dataset.calories,
+          protein: btn.dataset.protein,
+          carbs: 0,
+          fat: btn.dataset.quickProtein === "雞蛋" ? 5 : 2
+        });
+      });
+    });
+
+    $$("[data-body-zone]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.training.zone = btn.dataset.bodyZone;
+        state.training.muscle = Object.keys(exerciseLibrary[state.training.zone].muscles)[0];
+        state.training.exercise = "";
+        render();
+      });
+    });
+
+    $("#setForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const muscleData = currentMuscle();
+      const selected = muscleData.exercises.find((exercise) => exercise.name === state.training.exercise);
+      if (!selected) {
+        notify("請先選一個動作");
+        return;
+      }
+      const reps = Math.max(1, Number($("#repInput").value || 1));
+      const sets = Math.max(1, Number($("#setInput").value || 1));
+      state.training.sets.unshift({
+        exercise: selected.name,
+        muscle: muscleData.label,
+        reps,
+        sets,
+        at: new Date().toISOString()
+      });
+      state.training.name = selected.name;
+      state.training.minutes += Math.max(4, sets * 2);
+      render();
+      notify("已加入訓練紀錄");
+    });
+
+    $("#clearSets").addEventListener("click", () => {
+      state.training.sets = [];
+      state.training.minutes = 0;
+      state.training.name = "";
+      render();
+      notify("今日訓練已清空");
     });
 
     $$("[data-start-workout]").forEach((btn) => {
