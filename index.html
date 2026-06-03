@@ -403,6 +403,11 @@
       background: rgba(96, 226, 232, 0.13);
     }
 
+    .workout-row.active {
+      border-color: var(--line-strong);
+      background: rgba(96, 226, 232, 0.12);
+    }
+
     .chip strong {
       display: block;
       font-size: 13px;
@@ -1278,7 +1283,7 @@
       exerciseList.innerHTML = "";
       muscleData.exercises.forEach((exercise) => {
         const button = document.createElement("button");
-        button.className = "workout-row";
+        button.className = `workout-row${exercise.name === state.training.exercise ? " active" : ""}`;
         button.type = "button";
         button.dataset.exercise = exercise.name;
         button.innerHTML = `<span><strong>${escapeHtml(exercise.name)}</strong><span>${escapeHtml(exercise.hint)}</span></span><b>選</b>`;
