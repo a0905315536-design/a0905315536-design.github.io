@@ -1,24 +1,220 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="CORE_OS 健身營養紀錄，追蹤蛋白質、訓練強度、體重與每日目標。">
-<meta name="theme-color" content="#050608">
-<title>CORE_OS 健身營養紀錄</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="CORE_OS 健身營養紀錄">
+  <meta name="theme-color" content="#050608">
+  <title>CORE_OS 健身營養紀錄</title>
+  <link rel="stylesheet" href="style.css?v=liquid-natural1">
 </head>
 <body>
-<canvas id="bg"></canvas>
-<main class="app">
-<header class="top"><div class="brand"><div class="mark"><span class="dot"></span></div><div><h1>CORE_OS</h1><p class="sub">健身 · 飲食 · 每日紀錄</p></div></div><button class="icon" id="resetBtn" title="清空今日紀錄" aria-label="清空今日紀錄"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg></button></header>
-<section class="screen active" data-screen="home"><div class="hero"><p class="kicker">每日金句</p><h2 id="heroTitle"></h2><p class="quote-big" id="dailyQuoteText">身體會記得你願意開始的每一天。</p></div><div class="grid two"><div class="metric"><p class="label">蛋白質</p><p class="value"><span id="proteinNow">0</span>g</p><div class="bar"><span id="proteinBar"></span></div><p class="note">目標 <span id="proteinGoalText">120</span>g</p></div><div class="metric"><p class="label">熱量</p><p class="value"><span id="calorieNow">0</span></p><div class="bar"><span id="calorieBar"></span></div><p class="note">目標 <span id="calorieGoalText">2200</span> kcal</p></div></div><div class="panel home-panel" data-home-panel="protein"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-home="protein"><strong>每週蛋白質</strong><span id="proteinChartLabel">週一到週日</span></button><div class="home-content"><div class="protein-chart" id="proteinChart"></div></div></div><div class="panel home-panel" data-home-panel="intensity"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-home="intensity"><strong>每週訓練強度</strong><span id="aiScoreLabel">離線 AI 評估</span></button><div class="home-content"><div class="ai-chart" id="intensityChart"></div></div></div><div class="panel home-panel" data-home-panel="today"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-home="today"><strong>今天訓練</strong><span id="trainingSummary">尚未開始</span></button><div class="home-content"><div id="todaySets"></div></div></div><div class="panel home-panel" data-home-panel="advice"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-home="advice"><strong>本週建議</strong><span>本週趨勢</span></button><div class="home-content"><div class="advice" id="aiAdvice"></div></div></div></section>
-<section class="screen" data-screen="meals"><div class="panel"><div class="title"><h3>新增餐點</h3><span class="small">快速補蛋白</span></div><div class="chips" id="quickButtons" style="margin-bottom:12px"></div><div id="quickManage" class="manage-list"></div><button class="add" id="openQuick" type="button" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>新增餐點快捷鍵</button><form id="mealForm"><div class="field"><label for="mealName">餐點名稱</label><input id="mealName" autocomplete="off" placeholder="例如：雞胸便當"></div><div class="grid two" style="margin-top:0"><div class="field"><label for="mealProtein">蛋白質 g</label><input id="mealProtein" type="number" min="0" step="1" placeholder="35"></div><div class="field"><label for="mealCalories">熱量 kcal</label><input id="mealCalories" type="number" min="0" step="1" placeholder="520"></div></div><div class="grid two" style="margin-top:0"><div class="field"><label for="mealCarbs">碳水 g</label><input id="mealCarbs" type="number" min="0" step="1" placeholder="55"></div><div class="field"><label for="mealFat">脂肪 g</label><input id="mealFat" type="number" min="0" step="1" placeholder="15"></div></div><button class="primary" type="submit">加入餐點</button></form></div><div class="panel home-panel" data-home-panel="meal-list"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-home="meal-list"><strong>今日餐點</strong><span id="mealCount">0 筆</span></button><div class="home-content"><div id="mealList"></div></div></div></section>
-<section class="screen" data-screen="training"><div class="panel"><div class="title"><h3>訓練分類</h3><span class="small">先選大方向</span></div><div class="segment" id="zoneButtons"></div><p class="section-label">部位</p><div class="chips" id="muscleButtons"></div></div><div class="panel home-panel" data-home-panel="exercise-list"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-home="exercise-list"><strong id="exerciseTitle">動作</strong><span>點擊展開</span></button><div class="home-content"><div id="exerciseList"></div><button class="add" id="openCustom" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>新增自己的動作</button><button class="add" id="restoreExercises" type="button">恢復隱藏動作</button></div></div><div class="panel"><div class="title"><h3>記錄組數</h3><span class="small" id="selectedExerciseText">請先選動作</span></div><p class="empty" id="setStatus" style="padding-top:0"></p><form id="setForm"><div class="grid two" style="margin-top:0"><div class="field"><label for="repsInput">每組幾下</label><input id="repsInput" type="number" min="1" step="1" placeholder="12"></div><div class="field"><label for="setsInput">做幾組</label><input id="setsInput" type="number" min="1" step="1" placeholder="4"></div></div><div class="grid two" style="margin-top:0"><div class="field"><label for="setWeightInput">重量 kg</label><input id="setWeightInput" type="number" min="0" step="0.5" placeholder="0"></div><div class="field"><label for="rpeInput">RPE 1-10</label><input id="rpeInput" type="number" min="1" max="10" step="1" placeholder="7"></div></div><div class="field"><label for="restInput">休息秒數</label><input id="restInput" type="number" min="0" step="5" placeholder="90"></div><button class="primary" id="setSubmitBtn" type="submit">加入訓練紀錄</button><button class="ghost inline-action" id="cancelEditSet" type="button" style="display:none;margin-top:8px;width:100%">取消編輯</button></form><div id="setList"></div></div></section>
-<section class="screen" data-screen="profile"><div class="panel"><div class="title"><h3>個人目標</h3><span class="small">存在這支手機</span></div><form id="profileForm"><div class="grid two" style="margin-top:0"><div class="field"><label for="currentWeightInput">現在體重 kg</label><input id="currentWeightInput" type="number" min="1" step="0.1"></div><div class="field"><label for="targetWeightInput">目標體重 kg</label><input id="targetWeightInput" type="number" min="1" step="0.1"></div></div><div class="grid two" style="margin-top:0"><div class="field"><label for="heightInput">身高 cm</label><input id="heightInput" type="number" min="1" step="0.1"></div><div class="field"><label for="proteinGoalInput">蛋白質目標 g</label><input id="proteinGoalInput" type="number" min="1" step="1"></div></div><div class="field"><label for="calorieGoalInput">熱量目標 kcal</label><input id="calorieGoalInput" type="number" min="1" step="1"></div><button class="primary" type="submit">儲存目標</button></form></div><div class="panel home-panel" data-profile-panel="weight"><button class="home-toggle" type="button" aria-expanded="false" data-toggle-profile="weight"><strong>月體重總結</strong><span id="weightChartLabel">月份 / 體重</span></button><div class="home-content"><div class="chart-tools"><select id="weightYearSelect" class="year-select" aria-label="選擇年份"></select></div><div class="weight-chart" id="weightChart"></div><div id="weightStats" class="weight-stats"></div></div></div><div class="panel"><div class="title"><h3>今日總結</h3><span class="small" id="dateText"></span></div><div id="dailyReview"></div></div><div class="panel"><div class="title"><h3>資料安全中心</h3><span class="small" id="dataSafetyText">本機儲存</span></div><div class="grid two" style="margin-top:0"><button class="ghost" id="exportData" type="button">匯出資料</button><button class="ghost" id="importData" type="button">匯入資料</button><button class="ghost" id="restoreSnapshot" type="button">還原備份前</button><button class="ghost" id="undoReset" type="button">復原清空</button></div><input id="importFile" type="file" accept="application/json" style="display:none"></div></section>
-</main>
-<nav class="tabs"><button class="tab active" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></svg><span>首頁</span></button><button class="tab" data-tab="meals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v8a4 4 0 0 0 8 0V3"/><path d="M8 3v18"/><path d="M19 3v18"/></svg><span>餐點</span></button><button class="tab" data-tab="training"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 12h18"/><path d="M6 9H4v6h2M18 9h2v6h-2"/></svg><span>訓練</span></button><button class="tab" data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>目標</span></button></nav>
-<dialog id="quickDialog"><form id="quickForm" method="dialog"><div class="title"><h3>新增餐點快捷鍵</h3><button class="icon" type="button" id="closeQuick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="field"><label for="quickName">快捷鍵名稱</label><input id="quickName" autocomplete="off" placeholder="例如：牛奶"></div><div class="grid two" style="margin-top:0"><div class="field"><label for="quickProtein">蛋白質 g</label><input id="quickProtein" type="number" min="0" step="1" placeholder="8"></div><div class="field"><label for="quickCalories">熱量 kcal</label><input id="quickCalories" type="number" min="0" step="1" placeholder="150"></div></div><div class="grid two" style="margin-top:0"><div class="field"><label for="quickCarbs">碳水 g</label><input id="quickCarbs" type="number" min="0" step="1" placeholder="12"></div><div class="field"><label for="quickFat">脂肪 g</label><input id="quickFat" type="number" min="0" step="1" placeholder="5"></div></div><div class="dialog-actions"><button class="ghost" type="button" id="cancelQuick">取消</button><button class="primary" type="submit">新增</button></div></form></dialog>
-<dialog id="customDialog"><form id="customForm" method="dialog"><div class="title"><h3>新增自己的動作</h3><button class="icon" type="button" id="closeCustom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="field"><label for="customExerciseName">動作名稱</label><input id="customExerciseName" autocomplete="off" placeholder="例如：彈力帶划船"></div><p class="small">會加入目前選到的部位分類。</p><div class="dialog-actions"><button class="ghost" type="button" id="cancelCustom">取消</button><button class="primary" type="submit">新增</button></div></form></dialog>
-<script src="app.js"></script>
+  <canvas id="bg"></canvas>
+  <main class="app">
+    <header class="top">
+      <div class="brand">
+        <div class="mark"><span class="dot"></span></div>
+        <div>
+          <h1>CORE_OS</h1>
+          <p class="sub">健身 · 飲食 · 每日紀錄</p>
+        </div>
+      </div>
+      <button class="icon" id="resetBtn" type="button" aria-label="清空今天">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg>
+      </button>
+    </header>
+
+    <section class="screen active" data-screen="home">
+      <div class="hero">
+        <p class="kicker">每日金句</p>
+        <p class="quote-big" id="dailyQuoteText"></p>
+      </div>
+      <div class="grid two liquid-grid">
+        <div class="metric liquid-card">
+          <div class="liquid-orb protein-orb" aria-label="今日蛋白質完成度">
+            <div class="liquid-fill" id="proteinLiquid"></div>
+            <div class="scan-ring"></div>
+            <div class="liquid-readout"><span id="proteinNow">0</span><small>g</small></div>
+          </div>
+          <p class="label">蛋白質</p>
+          <p class="note">目標 <span id="proteinGoalText">120</span>g</p>
+        </div>
+        <div class="metric liquid-card">
+          <div class="liquid-orb calorie-orb" aria-label="今日熱量完成度">
+            <div class="liquid-fill" id="calorieLiquid"></div>
+            <div class="scan-ring"></div>
+            <div class="liquid-readout"><span id="calorieNow">0</span><small>kcal</small></div>
+          </div>
+          <p class="label">熱量</p>
+          <p class="note">目標 <span id="calorieGoalText">2200</span> kcal</p>
+        </div>
+      </div>
+      <div class="panel home-panel" data-home-panel="protein">
+        <button class="home-toggle" type="button" data-toggle-home="protein"><strong>每週蛋白質</strong><span id="proteinChartLabel">週一到週日</span></button>
+        <div class="home-content"><div class="chart" id="proteinChart"></div></div>
+      </div>
+      <div class="panel home-panel" data-home-panel="intensity">
+        <button class="home-toggle" type="button" data-toggle-home="intensity"><strong>每週訓練強度</strong><span id="intensityLabel">離線 AI 評估</span></button>
+        <div class="home-content"><div class="chart" id="intensityChart"></div></div>
+      </div>
+      <div class="panel home-panel" data-home-panel="today">
+        <button class="home-toggle" type="button" data-toggle-home="today"><strong>今天訓練</strong><span id="trainingSummary">尚未開始</span></button>
+        <div class="home-content"><div id="todaySets"></div></div>
+      </div>
+      <div class="panel home-panel" data-home-panel="advice">
+        <button class="home-toggle" type="button" data-toggle-home="advice"><strong>本週建議</strong><span>趨勢整理</span></button>
+        <div class="home-content"><div class="advice" id="weeklyAdvice"></div></div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="meals">
+      <div class="panel">
+        <div class="title">
+          <h3>新增餐點</h3>
+          <button class="mini-btn" id="toggleQuickManage" type="button">管理</button>
+        </div>
+        <div class="chips" id="quickButtons"></div>
+        <div id="quickManage" class="manage-list collapsed"></div>
+        <form id="mealForm">
+          <div class="field"><label for="mealName">餐點名稱</label><input id="mealName" autocomplete="off" placeholder="例如：雞胸便當"></div>
+          <div class="grid two compact">
+            <div class="field"><label for="mealProtein">蛋白質 g</label><input id="mealProtein" type="number" min="0" step="1" placeholder="35"></div>
+            <div class="field"><label for="mealCalories">熱量 kcal</label><input id="mealCalories" type="number" min="0" step="1" placeholder="520"></div>
+          </div>
+          <div class="grid two compact">
+            <div class="field"><label for="mealCarbs">碳水 g</label><input id="mealCarbs" type="number" min="0" step="1" placeholder="55"></div>
+            <div class="field"><label for="mealFat">脂肪 g</label><input id="mealFat" type="number" min="0" step="1" placeholder="15"></div>
+          </div>
+          <button class="primary" type="submit">加入餐點</button>
+        </form>
+      </div>
+      <div class="panel home-panel" data-home-panel="meal-list">
+        <button class="home-toggle" type="button" data-toggle-home="meal-list"><strong>今日餐點</strong><span id="mealCount">0 筆</span></button>
+        <div class="home-content"><div id="mealList"></div></div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="training">
+      <div class="panel">
+        <div class="title"><h3>訓練動作</h3><span class="small">選部位再選動作</span></div>
+        <p class="section-label">部位分類</p>
+        <div class="chips" id="muscleButtons"></div>
+        <div class="home-panel open" data-home-panel="exercise-list">
+          <button class="home-toggle" type="button" data-toggle-home="exercise-list"><strong id="exerciseTitle">動作</strong><span>點擊開合</span></button>
+          <div class="home-content">
+            <div id="exerciseList" class="manage-list"></div>
+            <button class="add" id="openCustom" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新增自己的動作</button>
+            <button class="add muted-add" id="restoreExercises" type="button">恢復隱藏動作</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="profile">
+      <div class="panel">
+        <div class="title"><h3>個人目標</h3><span class="small">存在這支手機</span></div>
+        <form id="profileForm">
+          <div class="grid two compact">
+            <div class="field"><label for="currentWeightInput">現在體重 kg</label><input id="currentWeightInput" type="number" min="1" step="0.1"></div>
+            <div class="field"><label for="targetWeightInput">目標體重 kg</label><input id="targetWeightInput" type="number" min="1" step="0.1"></div>
+          </div>
+          <div class="grid two compact">
+            <div class="field"><label for="heightInput">身高 cm</label><input id="heightInput" type="number" min="1" step="0.1"></div>
+            <div class="field"><label for="proteinGoalInput">蛋白質目標 g</label><input id="proteinGoalInput" type="number" min="1" step="1"></div>
+          </div>
+          <div class="field"><label for="calorieGoalInput">熱量目標 kcal</label><input id="calorieGoalInput" type="number" min="1" step="1"></div>
+          <button class="primary" type="submit">儲存目標</button>
+        </form>
+      </div>
+      <div class="panel home-panel" data-home-panel="weight">
+        <button class="home-toggle" type="button" data-toggle-home="weight"><strong>月體重總結</strong><span id="weightChartLabel">月份 / 體重</span></button>
+        <div class="home-content">
+          <div class="chart-tools"><select id="weightYearSelect" class="year-select" aria-label="選擇年份"></select></div>
+          <div class="chart" id="weightChart"></div>
+          <div id="weightStats" class="weight-stats"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="title"><h3>今日總結</h3><span class="small" id="dateText"></span></div>
+        <div id="dailyReview"></div>
+      </div>
+      <div class="panel">
+        <div class="title"><h3>資料安全中心</h3><span class="small" id="dataSafetyText">本機儲存</span></div>
+        <div class="grid two compact">
+          <button class="ghost" id="exportData" type="button">匯出資料</button>
+          <button class="ghost" id="importData" type="button">匯入資料</button>
+          <button class="ghost" id="restoreSnapshot" type="button">還原備份</button>
+          <button class="ghost" id="undoReset" type="button">復原清空</button>
+        </div>
+        <input id="importFile" type="file" accept="application/json" hidden>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></svg><span>首頁</span></button>
+    <button class="tab" data-tab="meals"><svg viewBox="0 0 24 24"><path d="M4 3v8a4 4 0 0 0 8 0V3"/><path d="M8 3v18"/><path d="M19 3v18"/></svg><span>餐點</span></button>
+    <button class="tab" data-tab="training"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 12h18"/><path d="M6 9H4v6h2M18 9h2v6h-2"/></svg><span>訓練</span></button>
+    <button class="tab" data-tab="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>目標</span></button>
+  </nav>
+
+  <dialog id="setDialog">
+    <form id="setForm" method="dialog">
+      <div class="title"><h3>記錄組數</h3><button class="icon" type="button" id="closeSetDialog"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <span class="small" id="selectedExerciseText">請先選動作</span>
+      <p class="empty" id="setStatus"></p>
+      <div id="exerciseProgress" class="progress-box"></div>
+      <div class="grid two compact">
+        <div class="field"><label for="repsInput">每組幾下</label><input id="repsInput" type="number" min="1" step="1" placeholder="12"></div>
+        <div class="field"><label for="setsInput">做幾組</label><input id="setsInput" type="number" min="1" step="1" placeholder="4"></div>
+      </div>
+      <div class="grid two compact">
+        <div class="field"><label for="setWeightInput">重量 kg</label><input id="setWeightInput" type="number" min="0" step="0.5" placeholder="0"></div>
+        <div class="field"><label for="rpeInput">RPE 1-10</label><input id="rpeInput" type="number" min="1" max="10" step="1" placeholder="7"></div>
+      </div>
+      <div class="field"><label for="restInput">休息秒數</label><input id="restInput" type="number" min="0" step="5" placeholder="90"></div>
+      <button class="primary" id="setSubmitBtn" type="submit">加入訓練紀錄</button>
+      <button class="ghost inline-action" id="cancelEditSet" type="button" hidden>取消編輯</button>
+    </form>
+  </dialog>
+
+  <dialog id="quickDialog">
+    <form id="quickForm" method="dialog">
+      <div class="title"><h3>新增餐點快捷鍵</h3><button class="icon" type="button" id="closeQuick"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="field"><label for="quickName">快捷鍵名稱</label><input id="quickName" autocomplete="off" placeholder="例如：牛奶"></div>
+      <div class="grid two compact"><div class="field"><label for="quickProtein">蛋白質 g</label><input id="quickProtein" type="number" min="0" step="1" placeholder="8"></div><div class="field"><label for="quickCalories">熱量 kcal</label><input id="quickCalories" type="number" min="0" step="1" placeholder="150"></div></div>
+      <div class="grid two compact"><div class="field"><label for="quickCarbs">碳水 g</label><input id="quickCarbs" type="number" min="0" step="1" placeholder="12"></div><div class="field"><label for="quickFat">脂肪 g</label><input id="quickFat" type="number" min="0" step="1" placeholder="5"></div></div>
+      <div class="dialog-actions"><button class="ghost" type="button" id="cancelQuick">取消</button><button class="primary" type="submit">新增</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="addMealToolDialog">
+    <div class="title"><h3>新增快捷項目</h3><button class="icon" type="button" id="closeMealTool"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="dialog-actions">
+      <button class="ghost" type="button" id="chooseQuickTool">餐點快捷鍵</button>
+      <button class="ghost" type="button" id="chooseComboTool">餐點組合</button>
+    </div>
+  </dialog>
+
+  <dialog id="comboDialog">
+    <form id="comboForm" method="dialog">
+      <div class="title"><h3>新增餐點組合</h3><button class="icon" type="button" id="closeCombo"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="field"><label for="comboName">組合名稱</label><input id="comboName" autocomplete="off" placeholder="例如：早餐固定組"></div>
+      <div class="grid two compact"><div class="field"><label for="comboProtein">蛋白質 g</label><input id="comboProtein" type="number" min="0" step="1" placeholder="45"></div><div class="field"><label for="comboCalories">熱量 kcal</label><input id="comboCalories" type="number" min="0" step="1" placeholder="650"></div></div>
+      <div class="grid two compact"><div class="field"><label for="comboCarbs">碳水 g</label><input id="comboCarbs" type="number" min="0" step="1" placeholder="70"></div><div class="field"><label for="comboFat">脂肪 g</label><input id="comboFat" type="number" min="0" step="1" placeholder="18"></div></div>
+      <div class="dialog-actions"><button class="ghost" type="button" id="cancelCombo">取消</button><button class="primary" type="submit">新增</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="customDialog">
+    <form id="customForm" method="dialog">
+      <div class="title"><h3>新增自己的動作</h3><button class="icon" type="button" id="closeCustom"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="field"><label for="customExerciseName">動作名稱</label><input id="customExerciseName" autocomplete="off" placeholder="例如：彈力帶划船"></div>
+      <p class="small">會加入目前選到的部位分類。</p>
+      <div class="dialog-actions"><button class="ghost" type="button" id="cancelCustom">取消</button><button class="primary" type="submit">新增</button></div>
+    </form>
+  </dialog>
+
+  <script src="app.js?v=liquid-natural1"></script>
 </body>
 </html>
